@@ -1,0 +1,25 @@
+
+{% extends 'layout' %}
+{% block main %}
+  {% include 'components/breadcrumbs' %}
+  <section class="row g-4 align-items-center">
+    <div class="col-lg-6">
+      <h1 class="display-5 fw-bold">Trend Commerce</h1>
+      <p class="lead">High-scale, modern, and accessible Liquid application template featuring catalog, cart, search, and analytics hooks.</p>
+      <a class="btn btn-primary btn-lg" href="/catalog">Shop now</a>
+    </div>
+    <div class="col-lg-6">
+      <div class="ratio ratio-16x9 bg-white rounded shadow-sm"></div>
+    </div>
+  </section>
+  <hr class="my-5"/>
+  {% include 'includes/sample-data' %}
+  <section>
+    <h2 class="h4 mb-3">Featured products</h2>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+      {% for p in products limit:8 %}
+        <div class="col">{% include 'components/product-card' product:p %}</div>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

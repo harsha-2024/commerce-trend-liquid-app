@@ -1,0 +1,30 @@
+
+<form method="get" class="row g-2 align-items-end" role="search" aria-label="Catalog filters">
+  <div class="col-md-4">
+    <label for="q" class="form-label">Search</label>
+    <input id="q" name="q" value="{{ request.params['q'] }}" class="form-control" placeholder="Search products" />
+  </div>
+  <div class="col-md-3">
+    <label for="category" class="form-label">Category</label>
+    <select id="category" name="category" class="form-select">
+      <option value="">All</option>
+      {% assign cats = 'phones,computers,accessories,home,health' | split: ',' %}
+      {% for c in cats %}
+        <option value="{{ c }}" {% if request.params['category'] == c %}selected{% endif %}>{{ c | capitalize }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label for="sort" class="form-label">Sort</label>
+    <select id="sort" name="sort" class="form-select">
+      {% assign s = request.params['sort'] %}
+      <option value="" {% if s == '' or s == nil %}selected{% endif %}>Relevance</option>
+      <option value="price_asc" {% if s == 'price_asc' %}selected{% endif %}>Price ↑</option>
+      <option value="price_desc" {% if s == 'price_desc' %}selected{% endif %}>Price ↓</option>
+      <option value="title_az" {% if s == 'title_az' %}selected{% endif %}>Title A→Z</option>
+    </select>
+  </div>
+  <div class="col-md-2 d-grid">
+    <button class="btn btn-primary">Apply</button>
+  </div>
+</form>

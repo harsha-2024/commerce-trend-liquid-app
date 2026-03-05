@@ -1,0 +1,17 @@
+
+{%- comment -%}
+  expects: page_current, page_size, total
+{%- endcomment -%}
+{%- assign pages = total | plus: page_size | minus: 1 | divided_by: page_size -%}
+{%- if pages > 1 -%}
+<nav aria-label="Pagination">
+  <ul class="pagination justify-content-center">
+    {%- for i in (1..pages) -%}
+      {%- assign active = i | minus: page_current -%}
+      <li class="page-item {% if active == 0 %}active{% endif %}">
+        <a class="page-link" href="?{{ 'q=' | append: request.params['q'] | url_encode }}&category={{ request.params['category'] }}&sort={{ request.params['sort'] }}&page={{ i }}&ps={{ page_size }}">{{ i }}</a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</nav>
+{%- endif -%}

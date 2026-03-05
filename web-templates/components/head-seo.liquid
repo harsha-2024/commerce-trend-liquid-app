@@ -1,0 +1,10 @@
+
+<title>{% if page.title %}{{ page.title }} · {% endif %}{{ website.name }}</title>
+<meta name="description" content="{{ page.description | default: website.name }}" />
+<link rel="icon" href="/assets/favicon.ico" />
+<meta name="theme-color" content="#0a5bdc"/>
+<!-- OpenGraph -->
+<meta property="og:title" content="{{ page.title | default: website.name }}"/>
+<meta property="og:description" content="{{ page.description | default: website.name }}"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="{{ request.url }}"/>

@@ -1,0 +1,17 @@
+
+{%- comment -%}
+  include parameters:
+   - product: hash(id,title,price,tags,image)
+{%- endcomment -%}
+{%- assign p = include.product -%}
+<article class="card h-100 shadow-sm">
+  <img src="{{ p.image | default: '/assets/img/placeholder.svg' }}" class="card-img-top" alt="{{ p.title }}" loading="lazy">
+  <div class="card-body d-flex flex-column">
+    <h3 class="h6 card-title flex-grow-1">{{ p.title }}</h3>
+    <div class="d-flex align-items-center justify-content-between">
+      <span class="fw-semibold">{% include 'macros/money' amount: p.price %}</span>
+      <button class="btn btn-sm btn-outline-primary" data-add-to-cart="{{ p.id }}" data-title="{{ p.title }}" data-price="{{ p.price }}">Add</button>
+    </div>
+  </div>
+  <a class="stretched-link" href="/product?id={{ p.id }}" aria-label="View {{ p.title }}"></a>
+</article>

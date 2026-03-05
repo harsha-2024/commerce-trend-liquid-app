@@ -1,0 +1,15 @@
+
+{% extends 'layout' %}
+{% block main %}
+  {% include 'components/breadcrumbs' %}
+  <h1 class="h3">Account</h1>
+  {% if user %}
+    <p>Welcome back, {{ user.fullname | default: 'User' }}!</p>
+    <ul>
+      <li><a href="/orders">Your orders</a></li>
+      <li><a href="/profile">Profile</a></li>
+    </ul>
+  {% else %}
+    <div class="alert alert-info">Please <a href="/sign-in">sign in</a> to view your account.</div>
+  {% endif %}
+{% endblock %}

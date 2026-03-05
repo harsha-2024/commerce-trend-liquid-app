@@ -1,0 +1,32 @@
+
+{% extends 'layout' %}
+{% block main %}
+  {% include 'components/breadcrumbs' %}
+  <h1 class="h3">Admin · Orders (Demo)</h1>
+  {%- assign csv = '1001|Aurora Phone X|699|2026-03-01;1002|Nebula Laptop Pro|1299|2026-03-02;1003|Aurora Phone X|699|2026-03-02;1004|Stellar Earbuds|149|2026-03-03' -%}
+  {% assign rows = csv | split: ';' %}
+  {% assign orders = '' | split: '' %}
+  {% for r in rows %}
+    {% assign c = r | split: '|' %}
+    {% assign o = hash %}{% assign o = o | merge: hash: 'id', value: c[0] %}
+    {% assign o = o | merge: hash: 'title', value: c[1] %}
+    {% assign o = o | merge: hash: 'total', value: c[2] %}
+    {% assign o = o | merge: hash: 'date', value: c[3] %}
+    {% assign orders = orders | push: o %}
+  {% endfor %}
+
+  {%- assign revenue = 0 -%}
+  {% for o in orders %}{% assign revenue = revenue | plus: o.total %}{% endfor %}
+  <div class="alert alert-success">Total revenue: {% include 'macros/money' amount: revenue %}</div>
+
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead><tr><th>ID</th><th>Product</th><th>Total</th><th>Date</th></tr></thead>
+      <tbody>
+      {% for o in orders %}
+        <tr><td>{{ o.id }}</td><td>{{ o.title }}</td><td>{% include 'macros/money' amount: o.total %}</td><td>{{ o.date }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

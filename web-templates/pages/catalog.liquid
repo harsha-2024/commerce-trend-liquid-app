@@ -1,0 +1,50 @@
+
+{% extends 'layout' %}
+{% block main %}
+  {% include 'components/breadcrumbs' %}
+  <h1 class="h3">Catalog</h1>
+  {% include 'components/facet-filter' %}
+  {% include 'includes/sample-data' %}
+
+  {% assign q = request.params['q'] | downcase %}
+  {% assign category = request.params['category'] %}
+  {% assign sort = request.params['sort'] %}
+  {% assign page = request.params['page'] | plus: 0 %}{% if page < 1 %}{% assign page = 1 %}{% endif %}
+  {% assign page_size = request.params['ps'] | plus: 0 %}{% if page_size < 1 %}{% assign page_size = 12 %}{% endif %}
+
+  {%- comment -%}Filter pipe{%- endcomment -%}
+  {% assign filtered = '' | split: '' %}
+  {% for p in products %}
+    {% assign keep = true %}
+    {% if q and q != '' %}
+      {% assign t = p.title | downcase %}
+      {% if t contains q %}{% else %}{% assign keep = false %}{% endif %}
+    {% endif %}
+    {% if keep and category and category != '' %}
+      {% if p.tags contains category %}{% else %}{% assign keep = false %}{% endif %}
+    {% endif %}
+    {% if keep %}{% assign filtered = filtered | push: p %}{% endif %}
+  {% endfor %}
+
+  {%- comment -%}Sort pipe{%- endcomment -%}
+  {% if sort == 'price_asc' %}
+    {% assign filtered = filtered | sort: 'price' %}
+  {% elsif sort == 'price_desc' %}
+    {% assign filtered = filtered | sort: 'price' | reverse %}
+  {% elsif sort == 'title_az' %}
+    {% assign filtered = filtered | sort_natural: 'title' %}
+  {% endif %}
+
+  {%- assign total = filtered.size -%}
+  {%- assign offset = page | minus: 1 | times: page_size -%}
+
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 mt-3">
+    {% for p in filtered limit: page_size offset: offset %}
+      <div class="col">{% include 'components/product-card' product:p %}</div>
+    {% else %}
+      <div class="alert alert-info">No results. Try clearing filters.</div>
+    {% endfor %}
+  </div>
+
+  {% include 'components/pagination' page_current: page, page_size: page_size, total: total %}
+{% endblock %}

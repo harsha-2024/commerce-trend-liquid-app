@@ -1,0 +1,6 @@
+
+{%- comment -%} Usage: {% include 'macros/money' amount: price currency: '$' %} {%- endcomment -%}
+{%- assign _currency = include.currency | default: '$' -%}
+{%- assign _amount = include.amount | plus: 0 -%}
+{%- capture _out -%}{{ _currency }}{{ _amount | round: 2 }}{%- endcapture -%}
+{{ _out }}

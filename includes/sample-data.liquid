@@ -1,0 +1,26 @@
+
+{%- comment -%}
+  Creates an in-memory array of product hashes from a compact CSV
+  Format: id|title|price|categories|image
+{%- endcomment -%}
+{% assign _csv =
+  '101|Aurora Phone X|699|phones,5g|/assets/img/ph1.jpg;'
+  | append: '102|Nebula Laptop Pro|1299|computers,ultrabook|/assets/img/lap1.jpg;'
+  | append: '103|Stellar Earbuds|149|accessories,audio|/assets/img/ear1.jpg;'
+  | append: '104|Comet Vacuum|249|home,cleaning|/assets/img/vac1.jpg;'
+  | append: '105|Pulse Smartwatch|299|health,accessories|/assets/img/watch1.jpg;'
+  | append: '106|Galaxy Monitor 27"|399|computers,accessories|/assets/img/mon1.jpg;'
+%}
+{% assign rows = _csv | split: ';' %}
+{% assign products = '' | split: '' %}
+{% for r in rows %}
+  {% if r != '' %}
+    {% assign c = r | split: '|' %}
+    {% assign p = hash %}{% assign p = p | merge: hash: 'id', value: c[0] %}
+    {% assign p = p | merge: hash: 'title', value: c[1] %}
+    {% assign p = p | merge: hash: 'price', value: c[2] %}
+    {% assign p = p | merge: hash: 'tags', value: c[3] %}
+    {% assign p = p | merge: hash: 'image', value: c[4] %}
+    {% assign products = products | push: p %}
+  {% endif %}
+{% endfor %}

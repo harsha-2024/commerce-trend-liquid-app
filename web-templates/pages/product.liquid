@@ -1,0 +1,21 @@
+
+{% extends 'layout' %}
+{% block main %}
+  {% include 'components/breadcrumbs' %}
+  {% include 'includes/sample-data' %}
+  {% assign id = request.params['id'] %}
+  {% assign item = '' %}
+  {% for p in products %}{% if p.id == id %}{% assign item = p %}{% endif %}{% endfor %}
+  {% if item == '' %}
+    <div class="alert alert-warning">Product not found.</div>
+  {% else %}
+    <div class="row g-4">
+      <div class="col-md-6"><img class="img-fluid rounded shadow-sm" src="{{ item.image }}" alt="{{ item.title }}"/></div>
+      <div class="col-md-6">
+        <h1 class="h3">{{ item.title }}</h1>
+        <p class="lead">{% include 'macros/money' amount: item.price %}</p>
+        <button class="btn btn-primary" data-add-to-cart="{{ item.id }}" data-title="{{ item.title }}" data-price="{{ item.price }}">Add to cart</button>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

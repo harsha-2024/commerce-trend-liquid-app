@@ -1,0 +1,21 @@
+
+{% assign lang = website.defaultlanguagecode | default: 'en' %}
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  {% include 'components/head-seo' %}
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preload" as="style" href="/assets/css/app.css" />
+  <link rel="stylesheet" href="/assets/css/app.css" />
+</head>
+<body class="min-vh-100 d-flex flex-column">
+  {% include 'components/header' %}
+  <main id="main" class="container flex-grow-1 py-4">
+    {% block main %}{% endblock %}
+  </main>
+  {% include 'components/footer' %}
+  <script defer src="/assets/js/app.js"></script>
+  <script defer src="/assets/js/cart.js"></script>
+  {% include 'components/toast' %}
+</body>
+</html>
