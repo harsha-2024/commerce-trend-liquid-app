@@ -1,0 +1,52 @@
+{
+  "table": {
+    "displayName": "Product",
+    "schemaName": "pp_product",
+    "description": "Product catalog for Trend Commerce",
+    "columns": [
+      {
+        "displayName": "Name",
+        "schemaName": "pp_name",
+        "type": "SingleLine.Text",
+        "required": true
+      },
+      {
+        "displayName": "SKU",
+        "schemaName": "pp_sku",
+        "type": "SingleLine.Text",
+        "required": true,
+        "unique": true
+      },
+      {
+        "displayName": "Price",
+        "schemaName": "pp_price",
+        "type": "Currency",
+        "required": true
+      },
+      {
+        "displayName": "Category",
+        "schemaName": "pp_category",
+        "type": "Choice",
+        "choices": [
+          "phones",
+          "computers",
+          "accessories",
+          "home",
+          "health"
+        ]
+      },
+      {
+        "displayName": "Image URL",
+        "schemaName": "pp_imageurl",
+        "type": "URL",
+        "required": false
+      },
+      {
+        "displayName": "Description",
+        "schemaName": "pp_description",
+        "type": "MultiLine.Text",
+        "required": false
+      }
+    ]
+  }
+}

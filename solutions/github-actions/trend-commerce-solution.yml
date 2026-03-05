@@ -1,0 +1,66 @@
+
+name: trend-commerce-solution-pipeline
+on: { workflow_dispatch: {} }
+
+env:
+  SOLUTION_NAME: TrendCommerceSolution
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+      with: { dotnet-version: '8.x' }
+    - name: Install PAC CLI
+      run: |
+        dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+        pac --version
+    - name: Export & Unpack from Dev
+      run: |
+        pac auth create --url ${{ secrets.DEV_ENV_URL }} --tenant ${{ secrets.TENANT_ID }} --applicationId ${{ secrets.APP_ID }} --clientSecret ${{ secrets.APP_SECRET }}
+        mkdir -p out src/solution websrc
+        pac solution export --name $SOLUTION_NAME --path out/${SOLUTION_NAME}_unmanaged.zip --managed false
+        pac solution unpack --zipfile out/${SOLUTION_NAME}_unmanaged.zip --folder src/solution --allowDelete true
+        pac pages download --path websrc --webSiteId ${{ secrets.DEV_WEBSITE_ID }} --modelVersion Enhanced
+    - uses: actions/upload-artifact@v4
+      with: { name: solution_src, path: src/solution }
+
+  deploy_test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with: { name: solution_src, path: solution_src }
+    - uses: actions/setup-dotnet@v4
+      with: { dotnet-version: '8.x' }
+    - name: Install PAC CLI
+      run: |
+        dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+    - name: Pack & Import (Test)
+      run: |
+        pac auth create --url ${{ secrets.TEST_ENV_URL }} --tenant ${{ secrets.TENANT_ID }} --applicationId ${{ secrets.APP_ID }} --clientSecret ${{ secrets.APP_SECRET }}
+        mkdir -p out
+        pac solution pack --zipfile out/${{ env.SOLUTION_NAME }}_managed.zip --folder solution_src
+        pac solution import --path out/${{ env.SOLUTION_NAME }}_managed.zip --activate-plugins --force-overwrite
+
+  deploy_prod:
+    needs: deploy_test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with: { name: solution_src, path: solution_src }
+    - uses: actions/setup-dotnet@v4
+      with: { dotnet-version: '8.x' }
+    - name: Install PAC CLI
+      run: |
+        dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+    - name: Pack & Import (Prod)
+      run: |
+        pac auth create --url ${{ secrets.PROD_ENV_URL }} --tenant ${{ secrets.TENANT_ID }} --applicationId ${{ secrets.APP_ID }} --clientSecret ${{ secrets.APP_SECRET }}
+        mkdir -p out
+        pac solution pack --zipfile out/${{ env.SOLUTION_NAME }}_managed.zip --folder solution_src
+        pac solution import --path out/${{ env.SOLUTION_NAME }}_managed.zip --activate-plugins --force-overwrite

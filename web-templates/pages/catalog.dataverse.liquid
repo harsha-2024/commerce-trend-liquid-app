@@ -1,0 +1,10 @@
+
+{% comment %}
+  Catalog page bound to Dataverse List.
+  Configure a List named "Products List" (table: pp_product) and enable search.
+{% endcomment %}
+{% extends 'layout' %}
+{% block main %}
+  <h1 class="h3">Catalog</h1>
+  {% entitylist name: 'Products List' %}
+{% endblock %}

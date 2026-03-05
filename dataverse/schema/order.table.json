@@ -1,0 +1,35 @@
+{
+  "table": {
+    "displayName": "Order",
+    "schemaName": "pp_order",
+    "description": "Order header",
+    "columns": [
+      {
+        "displayName": "Order Number",
+        "schemaName": "pp_ordernumber",
+        "type": "AutoNumber",
+        "format": "ORD-{SEQNUM:6}"
+      },
+      {
+        "displayName": "Customer (Contact)",
+        "schemaName": "pp_customer",
+        "type": "Lookup",
+        "target": "contact",
+        "required": true
+      },
+      {
+        "displayName": "Order Date",
+        "schemaName": "pp_orderdate",
+        "type": "DateTime",
+        "required": true
+      },
+      {
+        "displayName": "Total",
+        "schemaName": "pp_total",
+        "type": "Currency",
+        "required": false,
+        "calculated": true
+      }
+    ]
+  }
+}

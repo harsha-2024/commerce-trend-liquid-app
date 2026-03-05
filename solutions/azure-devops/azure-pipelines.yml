@@ -1,0 +1,73 @@
+
+# azure-pipelines.yml — Dev→Test→Prod for Power Pages Solutions + Pages
+trigger: none
+
+variables:
+  SOLUTION_NAME: 'TrendCommerceSolution'
+
+stages:
+- stage: Build_Unmanaged
+  displayName: Export & Unpack from Dev
+  jobs:
+  - job: build
+    pool: { vmImage: 'ubuntu-latest' }
+    steps:
+    - task: UseDotNet@2
+      inputs: { packageType: 'sdk', version: '8.x' }
+    - script: |
+        dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+        echo "##vso[task.prependpath]$HOME/.dotnet/tools"
+        pac auth create --url $(DEV_ENV_URL) --tenant $(TENANT_ID) --applicationId $(APP_ID) --clientSecret $(APP_SECRET)
+        mkdir -p out src/solution websrc
+        pac solution export --name $(SOLUTION_NAME) --path out/$(SOLUTION_NAME)_unmanaged.zip --managed false
+        pac solution unpack --zipfile out/$(SOLUTION_NAME)_unmanaged.zip --folder src/solution --allowDelete true
+        # Optional: include website content (pages) in artifact
+        pac pages list
+        pac pages download --path websrc --webSiteId $(DEV_WEBSITE_ID) --modelVersion Enhanced
+      displayName: Export & Unpack
+    - publish: src/solution
+      artifact: solution_src
+    - publish: websrc
+      artifact: website_src
+
+- stage: Deploy_Test
+  dependsOn: Build_Unmanaged
+  jobs:
+  - deployment: deploy_test
+    environment: Test
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: UseDotNet@2
+            inputs: { packageType: 'sdk', version: '8.x' }
+          - download: current
+            artifact: solution_src
+          - script: |
+              dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+              echo "##vso[task.prependpath]$HOME/.dotnet/tools"
+              pac auth create --url $(TEST_ENV_URL) --tenant $(TENANT_ID) --applicationId $(APP_ID) --clientSecret $(APP_SECRET)
+              pac solution pack --zipfile out/$(SOLUTION_NAME)_managed.zip --folder $(Pipeline.Workspace)/solution_src
+              pac solution import --path out/$(SOLUTION_NAME)_managed.zip --activate-plugins --force-overwrite
+            displayName: Import managed solution
+
+- stage: Deploy_Prod
+  dependsOn: Deploy_Test
+  jobs:
+  - deployment: deploy_prod
+    environment: Prod
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: UseDotNet@2
+            inputs: { packageType: 'sdk', version: '8.x' }
+          - download: current
+            artifact: solution_src
+          - script: |
+              dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+              echo "##vso[task.prependpath]$HOME/.dotnet/tools"
+              pac auth create --url $(PROD_ENV_URL) --tenant $(TENANT_ID) --applicationId $(APP_ID) --clientSecret $(APP_SECRET)
+              pac solution pack --zipfile out/$(SOLUTION_NAME)_managed.zip --folder $(Pipeline.Workspace)/solution_src
+              pac solution import --path out/$(SOLUTION_NAME)_managed.zip --activate-plugins --force-overwrite
+            displayName: Import managed solution

@@ -1,0 +1,12 @@
+
+{% comment %}
+  Product details page bound to a Basic Form in Read mode.
+  Configure a Basic Form named "Product Details (Read)" with Record Source = Query String (id)
+{% endcomment %}
+{% extends 'layout' %}
+{% block main %}
+  {% entityform name: 'Product Details (Read)' %}
+  <div class="mt-3">
+    <a class="btn btn-primary" href="/checkout?product={{ request.params['id'] }}">Buy Now</a>
+  </div>
+{% endblock %}

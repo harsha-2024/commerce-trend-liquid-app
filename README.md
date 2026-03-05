@@ -1,41 +1,27 @@
 
-# Trend Commerce (Liquid) — 2026
+# Trend Commerce — Dataverse Integration Pack
 
-A **complex, robust, high‑scale Liquid application template** (Power Pages‑friendly) with catalog, search, faceted filters, product details, cart, and admin analytics demo.
+This add-on swaps sample CSV data for **real Dataverse tables**, wires **Lists/Forms** into pages, adds **i18n** (en-US + is-IS), and ships **security** (CSP/HSTS) + a **WAF starter**, plus **ALM pipelines** for Dev→Test→Prod.
 
-> This template is 100% Liquid + static assets. For production, bind lists/forms to Dataverse and move configuration with **solutions** and **pipelines**.
+## 1) Dataverse
+- Create tables from `dataverse/schema/*.json`.
+- Build views/forms/lists per `MAKER_NOTES.md`.
+- Bind pages:
+  - `/catalog` → `catalog.dataverse.liquid` uses `{% entitylist name: 'Products List' %}`.
+  - `/product` → `product.dataverse.liquid` uses `{% entityform name: 'Product Details (Read)' %}` (Record source = QueryString `id`).
+  - `/checkout` → `checkout.dataverse.liquid` uses `{% entityform name:'Order (Insert)' %}` and `{% entityform name:'Order Line (Insert)' %}`.
+  - `/account` → `account.dataverse.liquid` uses `{% entitylist name:'My Orders' %}`.
 
-## Pages (Web Templates)
-- `layout.liquid` — global shell, SEO head, header/footer, assets.
-- `pages/home.liquid` — hero + featured products.
-- `pages/catalog.liquid` — search `?q=`, category filter `?category=`, sort `?sort=price_asc|price_desc|title_az`, pagination `?page= & ps=`.
-- `pages/product.liquid` — product details + add to cart.
-- `pages/cart.liquid` — cart UI (localStorage) + totals.
-- `pages/checkout.liquid` — stub (connect to your flow/API).
-- `pages/account.liquid` — auth‑aware placeholder using `user`.
-- `pages/admin.liquid` — demo analytics (revenue) using Liquid aggregation.
+## 2) i18n (English + Icelandic)
+- Enable languages in Dataverse, then add Website Languages in Portal Management.
+- Translate or import content snippets in `/i18n/snippets/*`.
 
-## Components
-- `components/*` — product card, breadcrumbs, facet filter, pagination, toast.
-- `macros/money.liquid` — currency rendering include.
+## 3) Security
+- Copy `security/site-settings.json` values into Site Settings (HSTS, CSP, Referrer-Policy, etc.).
+- Follow `security/WAF.md` to enable WAF and add rules.
 
-## Sample data
-- `includes/sample-data.liquid` — in‑memory CSV → array of product hashes. Replace with Dataverse lists/fetchxml in production.
-
-## Install (Power Pages)
-1. In **Portal Management** → **Web Files**, upload `/assets/**/*`.
-2. Create **Web Templates** matching files in `/web-templates/**`.
-3. Create **Web Pages** (Home, Catalog, Product, Cart, Checkout, Account, Admin) and point to the corresponding templates.
-4. Optional: Replace `includes/sample-data.liquid` with Dataverse data (Lists or FetchXML) and set **Table Permissions**.
-
-## Extending for scale
-- Replace CSV sample with Dataverse; enable **server‑side filters**.
-- Add **Web Application Firewall**, CSP & headers via site settings.
-- Use **solutions/pipelines** to promote Dev→Test→Prod.
-
-## Accessibility & Performance
-- Semantic landmarks, visible focus, lazy images.
-- Small JS, instant UI feedback, pagination with offsets; ready for Core Web Vitals.
+## 4) ALM Pipelines
+- Add your site to a **solution** (Enhanced Data Model). Update pipeline secrets (DEV/TEST/PROD URLs, AppId/Secret, WebsiteId).
+- Use either Azure DevOps `azure-pipelines.yml` or GitHub Actions `trend-commerce-solution.yml` to export/unpack from Dev and import **managed** to Test/Prod.
 
 ---
-MIT License. Use at will.

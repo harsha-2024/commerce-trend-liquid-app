@@ -1,0 +1,42 @@
+{
+  "table": {
+    "displayName": "Order Line",
+    "schemaName": "pp_orderline",
+    "description": "Order line items",
+    "columns": [
+      {
+        "displayName": "Order",
+        "schemaName": "pp_orderid",
+        "type": "Lookup",
+        "target": "pp_order",
+        "required": true
+      },
+      {
+        "displayName": "Product",
+        "schemaName": "pp_productid",
+        "type": "Lookup",
+        "target": "pp_product",
+        "required": true
+      },
+      {
+        "displayName": "Quantity",
+        "schemaName": "pp_qty",
+        "type": "WholeNumber",
+        "required": true
+      },
+      {
+        "displayName": "Unit Price",
+        "schemaName": "pp_unitprice",
+        "type": "Currency",
+        "required": true
+      },
+      {
+        "displayName": "Line Total",
+        "schemaName": "pp_linetotal",
+        "type": "Currency",
+        "required": false,
+        "calculated": true
+      }
+    ]
+  }
+}

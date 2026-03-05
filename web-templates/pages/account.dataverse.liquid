@@ -1,0 +1,7 @@
+
+{% extends 'layout' %}
+{% block main %}
+  <h1 class="h4">My Orders</h1>
+  {% comment %} List showing orders for current contact {% endcomment %}
+  {% entitylist name: 'My Orders' %}
+{% endblock %}

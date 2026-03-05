@@ -1,0 +1,14 @@
+
+{% comment %}
+  Checkout page uses a Basic Form for Order (Insert) and a child form for Order Line.
+  Configure "Order (Insert)" and "Order Line (Insert)". On the Order Line form, set default values:
+   - Product (Lookup) from Query String 'product'
+   - Unit Price: from related Product using business rule or Power Automate on create.
+{% endcomment %}
+{% extends 'layout' %}
+{% block main %}
+  <h1 class="h4">Checkout</h1>
+  {% entityform name: 'Order (Insert)' %}
+  <hr/>
+  {% entityform name: 'Order Line (Insert)' %}
+{% endblock %}
